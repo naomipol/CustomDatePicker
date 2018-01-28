@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
- * <p>
+ *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
@@ -27,7 +27,6 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import javax.annotation.Nullable;
-
 
 @SuppressLint("ValidFragment")
 public class DatePickerDialogFragment extends DialogFragment {
@@ -59,9 +58,9 @@ public class DatePickerDialogFragment extends DialogFragment {
         final int month = c.get(Calendar.MONTH);
         final int day = c.get(Calendar.DAY_OF_MONTH);
 
-        com.facebook.react.modules.datepicker.DatePickerMode mode = com.facebook.react.modules.datepicker.DatePickerMode.DEFAULT;
+        DatePickerMode mode = DatePickerMode.DEFAULT;
         if (args != null && args.getString(DatePickerDialogModule.ARG_MODE, null) != null) {
-            mode = com.facebook.react.modules.datepicker.DatePickerMode.valueOf(args.getString(DatePickerDialogModule.ARG_MODE).toUpperCase(Locale.US));
+            mode = DatePickerMode.valueOf(args.getString(DatePickerDialogModule.ARG_MODE).toUpperCase(Locale.US));
         }
 
         DatePickerDialog dialog = null;
@@ -96,7 +95,9 @@ public class DatePickerDialogFragment extends DialogFragment {
         }
 
         final DatePicker datePicker = dialog.getDatePicker();
-
+        final OnDateSetListener innerOnDateSetListener = onDateSetListener;
+        final DatePickerDialog innerDialog = dialog;
+        
         dialog.setButton(DialogInterface.BUTTON_NEUTRAL, "CLEAR", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -110,12 +111,13 @@ public class DatePickerDialogFragment extends DialogFragment {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        datePicker.updateDate(year, month, day);
+                        //datePicker.updateDate(year, month, day);
+                        innerOnDateSetListener.onDateSet(datePicker,0,0,0);
+                        innerDialog.dismiss();
                     }
                 });
             }
         });
-
 
         if (args != null && args.containsKey(DatePickerDialogModule.ARG_MINDATE)) {
             // Set minDate to the beginning of the day. We need this because of clowniness in datepicker
